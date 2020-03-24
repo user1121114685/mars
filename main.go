@@ -3,8 +3,8 @@
 package main
 
 import (
-	"github.com/ouqiang/mars/cmd"
-	"github.com/ouqiang/mars/internal/common/version"
+	"mars/cmd"
+	"mars/internal/common/version"
 )
 
 var (
@@ -17,6 +17,6 @@ var (
 )
 
 func main() {
-	version.Init(AppVersion, BuildDate, GitCommit)
-	cmd.Execute()
+	version.Init(AppVersion, BuildDate, GitCommit) // 提交了个 空的版本号？
+	cmd.Execute()                                  // 执行了一个程序 屏幕输出？
 }

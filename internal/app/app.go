@@ -10,8 +10,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ouqiang/mars/internal/app/inject"
-	"github.com/ouqiang/mars/internal/app/inspector"
+	"mars/internal/app/inject"
+	"mars/internal/app/inspector"
 )
 
 const (

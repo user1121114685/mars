@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 
+	"mars/internal/common/socket/message"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/ouqiang/mars/internal/common/socket/message"
 )
 
 // Protobuf protobuf格式

@@ -8,12 +8,12 @@ import (
 
 	"github.com/rakyll/statik/fs"
 
-	"github.com/ouqiang/mars/internal/app/inject"
-	"github.com/ouqiang/mars/internal/app/inspector/controller"
-	_ "github.com/ouqiang/mars/internal/statik"
+	"mars/internal/app/inject"
+	"mars/internal/app/inspector/controller"
+	_ "mars/internal/statik"
 )
 
-const staticDir = "/public/"
+const staticDir = "/public/" //将这个目录嵌入go 的可执行文件中
 
 // router 路由
 type Router struct {
@@ -40,7 +40,7 @@ func (r *Router) Register() {
 }
 
 func (r *Router) registerStatic() {
-	statikFS, err := fs.New()
+	statikFS, err := fs.New() // 将文件嵌入go 的可执行文件中
 	if err != nil {
 		log.Fatal(err)
 	}

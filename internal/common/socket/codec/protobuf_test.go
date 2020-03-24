@@ -3,7 +3,8 @@ package codec
 import (
 	"testing"
 
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/socket/message"
+
 	"github.com/stretchr/testify/require"
 )
 

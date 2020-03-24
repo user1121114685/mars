@@ -1,7 +1,7 @@
 package codec
 
 import (
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/socket/message"
 )
 
 // Codec 编解码器

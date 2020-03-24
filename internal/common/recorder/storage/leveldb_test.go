@@ -7,12 +7,13 @@ import (
 	"testing"
 	"time"
 
+	"mars/internal/common/recorder"
+
 	"github.com/ouqiang/goutil"
-	"github.com/ouqiang/mars/internal/common/recorder"
 	"github.com/stretchr/testify/require"
 	"github.com/syndtr/goleveldb/leveldb"
 
-	"github.com/ouqiang/mars/internal/common"
+	"mars/internal/common"
 )
 
 func TestLevelDB(t *testing.T) {

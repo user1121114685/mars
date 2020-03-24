@@ -5,14 +5,15 @@ import (
 	"os"
 	"path/filepath"
 
+	"mars/interceptor"
+	"mars/internal/app/config"
+	"mars/internal/common"
+	"mars/internal/common/recorder"
+	"mars/internal/common/recorder/output"
+	"mars/internal/common/recorder/storage"
+	"mars/internal/common/socket"
+
 	"github.com/ouqiang/goproxy"
-	"github.com/ouqiang/mars/interceptor"
-	"github.com/ouqiang/mars/internal/app/config"
-	"github.com/ouqiang/mars/internal/common"
-	"github.com/ouqiang/mars/internal/common/recorder"
-	"github.com/ouqiang/mars/internal/common/recorder/output"
-	"github.com/ouqiang/mars/internal/common/recorder/storage"
-	"github.com/ouqiang/mars/internal/common/socket"
 	log "github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 )

@@ -3,8 +3,8 @@ package action
 import (
 	"time"
 
-	"github.com/ouqiang/mars/internal/common/recorder"
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/recorder"
+	"mars/internal/common/socket/message"
 )
 
 const (

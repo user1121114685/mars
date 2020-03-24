@@ -6,11 +6,11 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/ouqiang/mars/internal/common/socket/conn"
+	"mars/internal/common/socket/conn"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ouqiang/mars/internal/common/socket"
+	"mars/internal/common/socket"
 
 	"github.com/gorilla/websocket"
 )

@@ -1,7 +1,7 @@
 package socket
 
 import (
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/socket/message"
 )
 
 const (

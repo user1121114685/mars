@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"sync"
 
-	"github.com/ouqiang/mars/internal/common"
+	"mars/internal/common"
 )
 
 // CertCache 证书缓存

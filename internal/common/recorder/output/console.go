@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ouqiang/mars/internal/common/recorder"
+	"mars/internal/common/recorder"
 )
 
 // Console 输出到终端

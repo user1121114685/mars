@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/ouqiang/mars/internal/common"
+	"mars/internal/common"
 
-	"github.com/ouqiang/mars/internal/common/recorder"
+	"mars/internal/common/recorder"
+
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

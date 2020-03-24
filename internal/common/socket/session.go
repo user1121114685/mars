@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ouqiang/mars/internal/common/socket/conn"
+	"mars/internal/common/socket/conn"
 )
 
 // 可选项

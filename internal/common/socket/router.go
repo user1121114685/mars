@@ -3,8 +3,8 @@ package socket
 import (
 	"fmt"
 
-	"github.com/ouqiang/mars/internal/common/socket/codec"
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/socket/codec"
+	"mars/internal/common/socket/message"
 )
 
 // Handler 路由处理器

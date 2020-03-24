@@ -1,9 +1,15 @@
-# Mars - HTTP(S)代理, 用于抓包调试
+# Mars - HTTP(S)代理, 规则化抓包调试
 
-[![license](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/ouqiang/mars/blob/master/LICENSE)
-[![Release](https://img.shields.io/github/release/ouqiang/mars.svg?label=Release)](https://github.com/ouqiang/mars/releases)
+# 特别申明
+本项目从[Mars](https://github.com/ouqiang/mars)fork而来，并得到原作者许可进行二次开发。     
+        
+本项目不是开源项目，任何人不得利用使用本项目的一切相关从事营利或非营利项目。    
 
+本项目代码托管于github,coding gitlab,但都不是开源的。仅仅代码托管。     
 
+一切解释权，归本人所有，包括不限于变更任何条款。    
+
+---
 
 功能特性
 ----
@@ -40,7 +46,7 @@
 
 ## 下载
 
-[releases](https://github.com/ouqiang/mars/releases)
+[releases](https://mars/releases)
 
 ## 安装
 

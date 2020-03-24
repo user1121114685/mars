@@ -1,11 +1,12 @@
 package output
 
 import (
-	"github.com/ouqiang/mars/internal/common/recorder"
-	"github.com/ouqiang/mars/internal/common/recorder/output/action"
-	"github.com/ouqiang/mars/internal/common/socket"
-	"github.com/ouqiang/mars/internal/common/socket/codec"
-	"github.com/ouqiang/mars/internal/common/socket/message"
+	"mars/internal/common/recorder"
+	"mars/internal/common/recorder/output/action"
+	"mars/internal/common/socket"
+	"mars/internal/common/socket/codec"
+	"mars/internal/common/socket/message"
+
 	log "github.com/sirupsen/logrus"
 )
 

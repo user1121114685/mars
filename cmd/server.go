@@ -4,11 +4,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"mars/internal/app"
+	"mars/internal/app/config"
+	"mars/internal/app/inject"
+	"mars/internal/common/version"
+
 	"github.com/ouqiang/goutil"
-	"github.com/ouqiang/mars/internal/app"
-	"github.com/ouqiang/mars/internal/app/config"
-	"github.com/ouqiang/mars/internal/app/inject"
-	"github.com/ouqiang/mars/internal/common/version"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,7 +24,7 @@ const (
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "run proxy server",
+	Short: "启动Mars服务",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info(version.Format())
 		viper.BindPFlags(cmd.Flags())
@@ -34,7 +35,7 @@ var serverCmd = &cobra.Command{
 			log.SetLevel(log.InfoLevel)
 		}
 		container := inject.NewContainer(conf)
-		app.New(container).Run()
+		app.New(container).Run() // 从这里开始 运行服务
 	},
 }
 
@@ -52,7 +53,8 @@ func init() {
 }
 
 // 创建配置
-func createConfig() *config.Config {
+// 就是可以把某个变量赋值成这个函数的结果，结果的类型就是后面的定义类型。
+func createConfig() *config.Config { // 个人理解，这是一个函数，返回值是*config.Config
 	currentDir, err := goutil.WorkDir()
 	if err != nil {
 		log.Fatal(err)

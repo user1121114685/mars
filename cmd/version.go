@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	"github.com/ouqiang/mars/internal/common/version"
+	"mars/internal/common/version"
+
 	"github.com/spf13/cobra"
 )
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "print version",
+	Short: "查看版本号",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Println(version.Format())
 	},
