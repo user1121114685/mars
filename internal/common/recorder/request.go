@@ -3,7 +3,7 @@ package recorder
 import (
 	"net/http"
 
-	"github.com/ouqiang/goproxy"
+	"mars/goproxy"
 )
 
 // Request HTTP请求

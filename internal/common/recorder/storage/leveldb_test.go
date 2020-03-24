@@ -9,7 +9,8 @@ import (
 
 	"mars/internal/common/recorder"
 
-	"github.com/ouqiang/goutil"
+	"mars/goutil"
+
 	"github.com/stretchr/testify/require"
 	"github.com/syndtr/goleveldb/leveldb"
 

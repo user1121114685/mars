@@ -9,7 +9,8 @@ import (
 	"mars/internal/app/inject"
 	"mars/internal/common/version"
 
-	"github.com/ouqiang/goutil"
+	"mars/goutil"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

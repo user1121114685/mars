@@ -23,6 +23,8 @@ type Config struct {
 	App appConfig `mapstructure:"app"`
 	// Proxy 代理配置
 	MITMProxy mitmProxyConfig `mapstructure:"mitmProxy"`
+	// 证书配置
+	Certificate CertificateConfig `mapstructure:"Certificate"`
 }
 
 type appConfig struct {
@@ -38,6 +40,13 @@ type mitmProxyConfig struct {
 	CertCacheSize    int    `mapstructure:"certCacheSize"`
 	LeveldbDir       string `mapstructure:"leveldbDir"`
 	LeveldbCacheSize int    `mapstructure:"leveldbCacheSize"`
+}
+
+// 证书路径
+type CertificateConfig struct {
+	BasePrivate     string `mapstructure:"basePrivate"`
+	CaPrivate       string `mapstructure:"caPrivate"`
+	UserCertificate string `mapstructure:"userCertificate"`
 }
 
 // ProxyAddr 代理监听地址

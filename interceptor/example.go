@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ouqiang/goproxy"
+	"mars/goproxy"
 )
 
 func init() {

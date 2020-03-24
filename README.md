@@ -1,7 +1,7 @@
 # Mars - HTTP(S)代理, 规则化抓包调试
 
 # 特别申明
-本项目从[Mars](https://github.com/ouqiang/mars)fork而来，并得到原作者许可进行二次开发。     
+本项目从[Mars](https://github.com/ouqiang/mars)   fork而来，并得到原作者许可进行二次开发。     
         
 本项目不是开源项目，任何人不得利用使用本项目的一切相关从事营利或非营利项目。    
 

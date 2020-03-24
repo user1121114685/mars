@@ -13,7 +13,8 @@ import (
 	"mars/internal/common/recorder/storage"
 	"mars/internal/common/socket"
 
-	"github.com/ouqiang/goproxy"
+	"mars/goproxy"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 )

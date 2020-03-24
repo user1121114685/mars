@@ -8,7 +8,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/ouqiang/goproxy"
+	"mars/goproxy"
+
 	log "github.com/sirupsen/logrus"
 )
 
