@@ -18,5 +18,5 @@ leveldbCacheSize = 1000
 # 证书路径
 [Certificate]
 basePrivate = "./conf/private/base.key.pem"
-caPrivate = "./conf/private/base.key.pem"
+caPrivate = "./conf/private/ca.key.pem"
 userCertificate = "./conf/private/ca.crt"

@@ -1,15 +1,13 @@
 package cmd
 
 import (
-	"path/filepath"
-	"strings"
-
+	"mars/goutil"
 	"mars/internal/app"
 	"mars/internal/app/config"
 	"mars/internal/app/inject"
 	"mars/internal/common/version"
-
-	"mars/goutil"
+	"path/filepath"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -29,7 +27,7 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info(version.Format())
 		viper.BindPFlags(cmd.Flags())
-		conf := createConfig()
+		conf := CreateConfig()
 		if conf.App.Env.IsDev() {
 			log.SetLevel(log.DebugLevel)
 		} else {
@@ -55,7 +53,8 @@ func init() {
 
 // 创建配置
 // 就是可以把某个变量赋值成这个函数的结果，结果的类型就是后面的定义类型。
-func createConfig() *config.Config { // 个人理解，这是一个函数，返回值是*config.Config
+// CreateConfig 获取配置变量
+func CreateConfig() *config.Config { // 个人理解，这是一个函数，返回值是*config.Config
 	currentDir, err := goutil.WorkDir()
 	if err != nil {
 		log.Fatal(err)

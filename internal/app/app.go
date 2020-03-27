@@ -12,6 +12,7 @@ import (
 
 	"mars/internal/app/inject"
 	"mars/internal/app/inspector"
+	"mars/shadowsocks"
 )
 
 const (
@@ -40,6 +41,7 @@ func New(container *inject.Container) *App {
 func (app *App) Run() {
 	go app.startProxyServer()
 	go app.startInspectorServer()
+	go shadowsocks.ShadowsocksMain()
 	<-app.waitSignal()
 }
 

@@ -18,5 +18,5 @@ var (
 
 func main() {
 	version.Init(AppVersion, BuildDate, GitCommit) // 提交了个 空的版本号？
-	cmd.Execute()                                  // 执行了一个程序 屏幕输出？
+	cmd.Execute()                                  // 程序入口
 }
