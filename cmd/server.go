@@ -1,25 +1,18 @@
 package cmd
 
 import (
-	"mars/goutil"
 	"mars/internal/app"
 	"mars/internal/app/config"
 	"mars/internal/app/inject"
 	"mars/internal/common/version"
-	"path/filepath"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-const (
-	// 环境变量前缀
-	serverEnvPrefix = "MARS"
-	// 环境变量key分隔符
-	serverConfigKeySeparator = "_"
-)
+var Env string
+var ConfigFile string
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
@@ -27,7 +20,11 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info(version.Format())
 		viper.BindPFlags(cmd.Flags())
-		conf := CreateConfig()
+		err := config.CreateConfig(ConfigFile, Env) // 将参数传入config 包，获取后面的参数
+		if err != nil {
+			log.Print(err)
+		}
+		conf := config.Conf
 		if conf.App.Env.IsDev() {
 			log.SetLevel(log.DebugLevel)
 		} else {
@@ -40,43 +37,8 @@ var serverCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
-	var env string
-	var configFile string
-	serverCmd.Flags().StringVarP(&env, "env", "e", "prod", "dev | prod")
-	serverCmd.Flags().StringVarP(&configFile, "configFile", "c", "conf/app.toml", "config file path")
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix(serverEnvPrefix)
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", serverConfigKeySeparator))
-	viper.SetConfigType("toml")
-}
+	serverCmd.Flags().StringVarP(&Env, "env", "e", "prod", "dev | prod")                              // 获取传入的参数
+	serverCmd.Flags().StringVarP(&ConfigFile, "configFile", "c", "conf/app.toml", "config file path") // 获取传入的参数
 
-// 创建配置
-// 就是可以把某个变量赋值成这个函数的结果，结果的类型就是后面的定义类型。
-// CreateConfig 获取配置变量
-func CreateConfig() *config.Config { // 个人理解，这是一个函数，返回值是*config.Config
-	currentDir, err := goutil.WorkDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-	configFile := viper.GetString("configFile")
-	if !filepath.IsAbs(configFile) {
-		configFile = filepath.Join(currentDir, configFile)
-	}
-	viper.SetConfigFile(configFile)
-	log.Debugf("环境变量前缀: %s", serverEnvPrefix)
-	log.Debugf("环境变量key分隔符: %s", serverConfigKeySeparator)
-	log.Debugf("配置文件: %s", configFile)
-	err = viper.ReadInConfig()
-	if err != nil {
-		log.Fatalf("加载配置文件错误: %s", err)
-	}
-	conf := new(config.Config)
-	err = viper.Unmarshal(conf)
-	if err != nil {
-		log.Fatalf("配置文件解析错误: %s", err)
-	}
-	conf.App.Env = config.RuntimeMode(viper.GetString("env"))
-
-	return conf
 }

@@ -3,8 +3,33 @@ package config
 
 import (
 	"net"
+	"strings"
+
 	"strconv"
+
+	"mars/goutil"
+
+	"path/filepath"
+
+	"github.com/spf13/viper"
+
+	log "github.com/sirupsen/logrus"
 )
+
+const (
+	// 环境变量前缀
+	serverEnvPrefix = "MARS"
+	// 环境变量key分隔符
+	serverConfigKeySeparator = "_"
+)
+
+func init() {
+
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix(serverEnvPrefix)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", serverConfigKeySeparator))
+	viper.SetConfigType("toml")
+}
 
 // RuntimeMode 运行模式
 type RuntimeMode string
@@ -42,7 +67,7 @@ type mitmProxyConfig struct {
 	LeveldbCacheSize int    `mapstructure:"leveldbCacheSize"`
 }
 
-// 证书路径
+// CertificateConfig 证书路径
 type CertificateConfig struct {
 	BasePrivate     string `mapstructure:"basePrivate"`
 	CaPrivate       string `mapstructure:"caPrivate"`
@@ -57,4 +82,34 @@ func (ac appConfig) ProxyAddr() string {
 // InspectorAddr 审查监听地址
 func (ac appConfig) InspectorAddr() string {
 	return net.JoinHostPort(ac.Host, strconv.Itoa(ac.InspectorPort))
+}
+
+// Conf  创建Conf变量来存放配置文件
+var Conf *Config
+
+// CreateConfig 创建配置文件
+func CreateConfig(configFile string, env string) error { // 个人理解，这是一个函数，返回值是*config.Config
+	currentDir, err := goutil.WorkDir()
+	if err != nil {
+		return err
+	}
+	configFile = viper.GetString("configFile")
+	if !filepath.IsAbs(configFile) {
+		configFile = filepath.Join(currentDir, configFile)
+	}
+	viper.SetConfigFile(configFile)
+	log.Debugf("环境变量前缀: %s", serverEnvPrefix)
+	log.Debugf("环境变量key分隔符: %s", serverConfigKeySeparator)
+	log.Debugf("配置文件: %s", configFile)
+	err = viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+	Conf = new(Config)
+	err = viper.Unmarshal(Conf)
+	if err != nil {
+		return err
+	}
+	Conf.App.Env = RuntimeMode(viper.GetString("env"))
+	return nil
 }
