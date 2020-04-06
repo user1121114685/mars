@@ -26,7 +26,7 @@ const (
 	defaultClientReadWriteTimeout = 30 * time.Second
 )
 
-// 隧道连接成功响应行
+// tunnelEstablishedResponseLine 隧道连接成功响应行
 var tunnelEstablishedResponseLine = []byte("HTTP/1.1 200 Connection established\r\n\r\n")
 
 var badGateway = []byte(fmt.Sprintf("HTTP/1.1 %d %s\r\n\r\n", http.StatusBadGateway, http.StatusText(http.StatusBadGateway)))
@@ -81,9 +81,9 @@ func New(opt ...Option) *Proxy {
 	for _, o := range opt {
 		o(opts)
 	}
-	if opts.delegate == nil {
-		opts.delegate = &DefaultDelegate{}
-	}
+
+	opts.delegate = &DefaultDelegate{}
+
 	if opts.transport == nil {
 		opts.transport = &http.Transport{
 			DialContext: (&net.Dialer{
@@ -117,7 +117,7 @@ func New(opt ...Option) *Proxy {
 type Proxy struct {
 	delegate      Delegate
 	clientConnNum int32
-	decryptHTTPS  bool
+	decryptHTTPS  bool // 是否解密 SSl证书
 	cert          *cert.Certificate
 	transport     *http.Transport
 }
@@ -181,7 +181,8 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 		}
 	}
 	resp, err := p.transport.RoundTrip(newReq)
-	p.delegate.BeforeResponse(ctx, resp, err)
+
+	p.delegate.BeforeResponse(ctx, resp, err) // 这里修改传回内容
 	if ctx.abort {
 		return
 	}
@@ -191,6 +192,7 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 			resp.Header.Del(h)
 		}
 	}
+
 	responseFunc(resp, err)
 }
 
@@ -219,37 +221,46 @@ func (p *Proxy) forwardHTTPS(ctx *Context, rw http.ResponseWriter) {
 		return
 	}
 	defer clientConn.Close()
-	_, err = clientConn.Write(tunnelEstablishedResponseLine)
+	_, err = clientConn.Write(tunnelEstablishedResponseLine) // 修改隧道响应成功  HTTP/1.1 200 Connection established
 	if err != nil {
 		p.delegate.ErrorLog(fmt.Errorf("%s - HTTPS解密, 通知客户端隧道已连接失败, %s", ctx.Req.URL.Host, err))
 		return
 	}
+	// 创建ssl 解密证书
 	tlsConfig, err := p.cert.Generate(ctx.Req.URL.Host)
 	if err != nil {
 		p.delegate.ErrorLog(fmt.Errorf("%s - HTTPS解密, 生成证书失败: %s", ctx.Req.URL.Host, err))
 		rw.WriteHeader(http.StatusBadGateway)
 		return
 	}
+	// tls.Server使用conn作为下层传输接口返回一个TLS连接的服务端侧。配置参数config必须是非nil的且必须含有至少一个证书。
 	tlsClientConn := tls.Server(clientConn, tlsConfig)
-	tlsClientConn.SetDeadline(time.Now().Add(defaultClientReadWriteTimeout))
+	tlsClientConn.SetDeadline(time.Now().Add(defaultClientReadWriteTimeout)) // SetDeadline设置该连接的读写操作绝对期限。t为Time零值表示不设置超时。在一次Write/Read方法超时后，TLS连接状态会被破坏，之后所有的读写操作都会返回同一错误。
 	defer tlsClientConn.Close()
+
 	if err := tlsClientConn.Handshake(); err != nil {
 		p.delegate.ErrorLog(fmt.Errorf("%s - HTTPS解密, 握手失败: %s", ctx.Req.URL.Host, err))
 		return
 	}
-	buf := bufio.NewReader(tlsClientConn)
-	tlsReq, err := http.ReadRequest(buf)
+
+	buf := bufio.NewReader(tlsClientConn) // 读取ssl conn的内容，
+
+	tlsReq, err := http.ReadRequest(buf) // 读取 Request // 修改http 头部 的内容就从此开始 的内容就从此开始
+
 	if err != nil {
 		if err != io.EOF {
 			p.delegate.ErrorLog(fmt.Errorf("%s - HTTPS解密, 读取客户端请求失败: %s", ctx.Req.URL.Host, err))
 		}
 		return
 	}
+
+	// 给 tlsReq的几个结果赋值
 	tlsReq.RemoteAddr = ctx.Req.RemoteAddr
 	tlsReq.URL.Scheme = "https"
 	tlsReq.URL.Host = tlsReq.Host
 
 	ctx.Req = tlsReq
+
 	p.DoRequest(ctx, func(resp *http.Response, err error) {
 		if err != nil {
 			p.delegate.ErrorLog(fmt.Errorf("%s - HTTPS解密, 请求错误: %s", ctx.Req.URL, err))
@@ -291,6 +302,7 @@ func (p *Proxy) forwardTunnel(ctx *Context, rw http.ResponseWriter) {
 		return
 	}
 	defer targetConn.Close()
+
 	clientConn.SetDeadline(time.Now().Add(defaultClientReadWriteTimeout))
 	targetConn.SetDeadline(time.Now().Add(defaultTargetReadWriteTimeout))
 	if parentProxyURL == nil {
@@ -344,7 +356,7 @@ func CopyHeader(dst, src http.Header) {
 }
 
 // CloneHeader 深拷贝Header
-func CloneHeader(h http.Header) http.Header {
+func CloneHeader(h http.Header) http.Header { // 可在这里修改Header
 	h2 := make(http.Header, len(h))
 	for k, vv := range h {
 		vv2 := make([]string, len(vv))
@@ -363,6 +375,8 @@ func CloneBody(b io.ReadCloser) (r io.ReadCloser, body []byte, err error) {
 	if err != nil {
 		return http.NoBody, nil, err
 	}
+
+	// log.Println(string(body))
 	r = ioutil.NopCloser(bytes.NewReader(body))
 
 	return r, body, nil

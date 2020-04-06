@@ -35,8 +35,9 @@ type Interceptor interface {
 }
 
 // Recorder 记录http transaction
+//proxy := goproxy.New(goproxy.WithDelegate(&EventHandler{}))
 type Recorder struct {
-	proxy       *goproxy.Proxy
+	proxy       *goproxy.Proxy //  proxy := goproxy.New(goproxy.WithDelegate(&EventHandler{}))
 	storage     Storage
 	output      Output
 	interceptor Interceptor
@@ -51,7 +52,9 @@ func NewRecorder() *Recorder {
 
 // SetProxy 设置中间人代理
 func (r *Recorder) SetProxy(p *goproxy.Proxy) {
+	//r.proxy = goproxy.New(goproxy.WithDelegate(&goproxy.DefaultDelegate{}))
 	r.proxy = p
+
 }
 
 // SetStorage 设置transaction存储

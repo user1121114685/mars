@@ -26,6 +26,7 @@ const (
 // App 应用
 type App struct {
 	container *inject.Container
+	// goproxy.New(goproxy.WithDelegate(&EventHandler{}))
 }
 
 // New 创建应用

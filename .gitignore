@@ -9,3 +9,4 @@
 node_modules
 mars.exe
 __debug_bin
+goproxy/serveHttp

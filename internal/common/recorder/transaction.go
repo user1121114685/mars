@@ -6,10 +6,12 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/gogf/gf/text/gregex"
 	uuid "github.com/satori/go.uuid"
 
 	"mars/goproxy"
@@ -126,7 +128,19 @@ func (tx *Transaction) DumpResponse(resp *http.Response, e error) {
 		tx.Resp.Body.setContent(contentTypePlain, body)
 		return
 	}
+	// body = []byte(MarsReplaceString(body)) // 参数含义 需要替换的字符  替换后的字符 目标处理文件
+	// 可以从这里用正则替换body(网页实心内容)
+
 	tx.Resp.Body.setContent(contentType, body)
+}
+
+// MarsReplaceString 正则替换结果
+func MarsReplaceString(body []byte) string {
+	s1, err := gregex.ReplaceString(`.*`, "我的mars成功了！！", string(body))
+	if err != nil {
+		log.Println(err)
+	}
+	return s1
 }
 
 // body是否是二进制内容

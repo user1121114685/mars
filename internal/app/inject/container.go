@@ -43,7 +43,7 @@ func NewContainer(conf *config.Config) *Container {
 	c.createWebSocketOutput()
 	c.createSessionOption()
 
-	c.createProxy()
+	c.createProxy() //创建中间人代理proxy
 	c.createRecorderStorage()
 	c.createRecorderOutput()
 	c.createRecorderInterceptor()
@@ -67,6 +67,7 @@ func (c *Container) createProxy() {
 		certCache := recorder.NewCertCache(queue)
 		opts = append(opts, goproxy.WithDecryptHTTPS(certCache))
 	}
+
 	c.Proxy = goproxy.New(opts...)
 }
 

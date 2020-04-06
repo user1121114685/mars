@@ -31,6 +31,7 @@ var serverCmd = &cobra.Command{
 			log.SetLevel(log.InfoLevel)
 		}
 		container := inject.NewContainer(conf)
+		//	container.Proxy. //goproxy.New(goproxy.WithDelegate(&EventHandler{}))
 		app.New(container).Run() // 从这里开始 运行服务
 	},
 }

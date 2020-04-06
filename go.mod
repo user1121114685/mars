@@ -7,6 +7,7 @@ require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/cyfdecyf/leakybuf v0.0.0-20140618011800-ffae040843be
 	github.com/garyburd/redigo v1.6.0
+	github.com/gogf/gf v1.12.1
 	github.com/golang/protobuf v1.3.5
 	github.com/gorilla/websocket v1.4.2
 	github.com/ouqiang/goutil v1.2.2
