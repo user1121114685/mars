@@ -82,8 +82,10 @@ func New(opt ...Option) *Proxy {
 		o(opts)
 	}
 
-	opts.delegate = &DefaultDelegate{}
-
+	if opts.delegate == nil {
+		opts.delegate = &DefaultDelegate{}
+	}
+	// delegateMars := &DefaultDelegate{}
 	if opts.transport == nil {
 		opts.transport = &http.Transport{
 			DialContext: (&net.Dialer{
@@ -100,6 +102,7 @@ func New(opt ...Option) *Proxy {
 
 	p := &Proxy{}
 	p.delegate = opts.delegate
+	p.delegateMars = &DefaultDelegate{}
 	p.decryptHTTPS = opts.decryptHTTPS
 	if p.decryptHTTPS {
 		p.cert = &cert.Certificate{
@@ -115,11 +118,12 @@ func New(opt ...Option) *Proxy {
 
 // Proxy 实现了http.Handler接口
 type Proxy struct {
-	delegate      Delegate
+	delegate      Delegate // 在这里可以稍作修改 支持2个delegate
 	clientConnNum int32
 	decryptHTTPS  bool // 是否解密 SSl证书
 	cert          *cert.Certificate
 	transport     *http.Transport
+	delegateMars  Delegate // 专门用来修改数据
 }
 
 var _ http.Handler = &Proxy{}
@@ -167,7 +171,8 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 	if ctx.Data == nil {
 		ctx.Data = make(map[interface{}]interface{})
 	}
-	p.delegate.BeforeRequest(ctx)
+	p.delegateMars.BeforeRequest(ctx)
+	p.delegate.BeforeRequest(ctx) // 将修改好的内容传送到web 端口
 	if ctx.abort {
 		return
 	}
@@ -182,7 +187,8 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 	}
 	resp, err := p.transport.RoundTrip(newReq)
 
-	p.delegate.BeforeResponse(ctx, resp, err) // 这里修改传回内容
+	p.delegateMars.BeforeResponse(ctx, resp, err) // 这里修改传回内容
+	p.delegate.BeforeResponse(ctx, resp, err)     // 将修改好的内容传送到web 端口
 	if ctx.abort {
 		return
 	}

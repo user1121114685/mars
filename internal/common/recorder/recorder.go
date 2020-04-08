@@ -26,12 +26,26 @@ type Output interface {
 
 // Interceptor 拦截器
 type Interceptor interface {
-	// Connect 收到客户端连接, 自定义response返回, 只支持HTTP
+	// // Connect 收到客户端连接, 自定义response返回, 只支持HTTP
+	// Connect(ctx *goproxy.Context, rw http.ResponseWriter)
+	// // BeforeRequest 请求发送前, 修改request
+	// BeforeRequest(ctx *goproxy.Context)
+	// // BeforeResponse 响应发送前, 修改response
+	// BeforeResponse(ctx *goproxy.Context, resp *http.Response, err error)
+	// Connect 收到客户端连接
 	Connect(ctx *goproxy.Context, rw http.ResponseWriter)
-	// BeforeRequest 请求发送前, 修改request
+	// Auth 代理身份认证
+	Auth(ctx *goproxy.Context, rw http.ResponseWriter)
+	// BeforeRequest HTTP请求前 设置X-Forwarded-For, 修改Header、Body
 	BeforeRequest(ctx *goproxy.Context)
-	// BeforeResponse 响应发送前, 修改response
+	// BeforeResponse 响应发送到客户端前, 修改Header、Body、Status Code
 	BeforeResponse(ctx *goproxy.Context, resp *http.Response, err error)
+	// ParentProxy 上级代理
+	ParentProxy(*http.Request) (*url.URL, error)
+	// Finish 本次请求结束
+	Finish(ctx *goproxy.Context)
+	// 记录错误信息
+	ErrorLog(err error)
 }
 
 // Recorder 记录http transaction
@@ -41,6 +55,7 @@ type Recorder struct {
 	storage     Storage
 	output      Output
 	interceptor Interceptor
+	// Delegate    *goproxy.Delegate
 }
 
 // NewRecorder 创建recorder

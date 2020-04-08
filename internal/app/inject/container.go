@@ -60,6 +60,8 @@ func (c *Container) createProxy() {
 	opts := make([]goproxy.Option, 0, 3)
 	opts = append(opts, goproxy.WithDisableKeepAlive(true))
 	if c.Conf.MITMProxy.Enabled {
+		// opts = append(opts, goproxy.WithDelegate(c.txRecorder))
+		// opts = append(opts, goproxy.WithDelegate(&goproxy.DefaultDelegate{}))
 		opts = append(opts, goproxy.WithDelegate(c.txRecorder))
 	}
 	if c.Conf.MITMProxy.DecryptHTTPS {

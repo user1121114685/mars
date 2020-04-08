@@ -105,6 +105,10 @@ func (h *DefaultDelegate) BeforeResponse(ctx *Context, resp *http.Response, err 
 		bodyLength := len(bodyBytes)
 		resp.ContentLength = int64(bodyLength)
 		resp.Header.Set("Content-Length", strconv.Itoa(bodyLength))
+		ct := resp.Header.Get("Content-Type")
+		if !strings.Contains(ct, "utf-8") || !strings.Contains(ct, "UTF-8") {
+			resp.Header.Set("Content-Type", ct+";charset=utf-8")
+		}
 		// log.Println(string(bodyBytes)) // 查看替换成功没
 		// ctx.Resp = resp
 	}
@@ -142,12 +146,14 @@ func getContentType(h http.Header) string {
 		return strings.TrimSpace(segments[0])
 	}
 
+	// content-type: text/html; charset=UTF-8
+	// Content-Type: text/html;charset=utf-8
 	return contentTypeBinary // 返回是二进制文件
 }
 
 // MarsReplaceString 正则替换结果
 func MarsReplaceString(body []byte) string {
-	s1, err := gregex.ReplaceString(`.*`, "我的mars成功了！！", string(body))
+	s1, err := gregex.ReplaceString(`.+`, "我的mars成功了！！", string(body))
 	if err != nil {
 		log.Println(err)
 	}
