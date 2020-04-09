@@ -2,6 +2,7 @@
 package config
 
 import (
+	"fmt"
 	"net"
 	"strings"
 
@@ -11,6 +12,7 @@ import (
 
 	"path/filepath"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 
 	log "github.com/sirupsen/logrus"
@@ -50,6 +52,8 @@ type Config struct {
 	MITMProxy mitmProxyConfig `mapstructure:"mitmProxy"`
 	// 证书配置
 	Certificate CertificateConfig `mapstructure:"Certificate"`
+	//  过滤规则
+	Filterrules FilterrulesConfig `mapstructure:"filterrules"`
 }
 
 type appConfig struct {
@@ -74,6 +78,12 @@ type CertificateConfig struct {
 	UserCertificate string `mapstructure:"userCertificate"`
 }
 
+// FilterrulesConfig 过滤规则
+type FilterrulesConfig struct {
+	Name     string `mapstructure:"name"`
+	Filepath string `mapstructure:"Filepath"`
+}
+
 // ProxyAddr 代理监听地址
 func (ac appConfig) ProxyAddr() string {
 	return net.JoinHostPort(ac.Host, strconv.Itoa(ac.ProxyPort))
@@ -88,12 +98,13 @@ func (ac appConfig) InspectorAddr() string {
 var Conf *Config
 
 // CreateConfig 创建配置文件
-func CreateConfig(configFile string, env string) error { // 个人理解，这是一个函数，返回值是*config.Config
+func CreateConfig(configFile string, env string) error {
 	currentDir, err := goutil.WorkDir()
 	if err != nil {
 		return err
 	}
 	configFile = viper.GetString("configFile")
+
 	if !filepath.IsAbs(configFile) {
 		configFile = filepath.Join(currentDir, configFile)
 	}
@@ -111,5 +122,10 @@ func CreateConfig(configFile string, env string) error { // 个人理解，这�
 		return err
 	}
 	Conf.App.Env = RuntimeMode(viper.GetString("env"))
+	// 监听配置文件变化
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("配置发生变更：", e.Name)
+	})
 	return nil
 }

@@ -20,3 +20,9 @@ leveldbCacheSize = 1000
 basePrivate = "./conf/private/base.key.pem"
 caPrivate = "./conf/private/ca.key.pem"
 userCertificate = "./conf/private/ca.crt"
+
+# 模块化规则文件
+[filterrules]
+#[[module]]
+name = "测试规则"
+Filepath = "./conf/data/test.txt"

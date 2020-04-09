@@ -6,6 +6,7 @@ require (
 	github.com/Yee2/shadowsocks-go v0.0.0-20200320071300-cf9d0a4a3ab8
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/cyfdecyf/leakybuf v0.0.0-20140618011800-ffae040843be
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/garyburd/redigo v1.6.0
 	github.com/gogf/gf v1.12.1
 	github.com/golang/protobuf v1.3.5

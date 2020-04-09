@@ -14,7 +14,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"mars/filterrules"
 	"mars/goproxy/cert"
+
+	"github.com/gogf/gf/text/gregex"
 )
 
 const (
@@ -130,8 +133,17 @@ var _ http.Handler = &Proxy{}
 
 // ServeHTTP 实现了http.Handler接口
 func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	// 初始化规则文件
+	filterrules.LoadFilterRules()
 	if req.URL.Host == "" {
 		req.URL.Host = req.Host
+	}
+	pass := 0
+	for _, whitelist := range filterrules.Whitelist { // 遍历白名单
+		if gregex.IsMatchString(whitelist, req.Host) {
+			pass = 1
+		}
+
 	}
 	atomic.AddInt32(&p.clientConnNum, 1)
 	defer func() {
@@ -152,6 +164,9 @@ func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	switch {
+	case pass == 1: // 放行
+		// 什么都不做
+		p.forwardTunnel(ctx, rw)
 	case ctx.Req.Method == http.MethodConnect && p.decryptHTTPS:
 		p.forwardHTTPS(ctx, rw)
 	case ctx.Req.Method == http.MethodConnect:
@@ -168,6 +183,7 @@ func (p *Proxy) ClientConnNum() int32 {
 
 // DoRequest 执行HTTP请求，并调用responseFunc处理response
 func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)) {
+
 	if ctx.Data == nil {
 		ctx.Data = make(map[interface{}]interface{})
 	}
