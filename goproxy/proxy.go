@@ -138,6 +138,7 @@ func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if req.URL.Host == "" {
 		req.URL.Host = req.Host
 	}
+	// 白名单放行
 	pass := 0
 	for _, whitelist := range filterrules.Whitelist { // 遍历白名单
 		if gregex.IsMatchString(whitelist, req.Host) {

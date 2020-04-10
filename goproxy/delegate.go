@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"io/ioutil"
 	"log"
+	"mars/filterrules"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -62,7 +63,17 @@ func (h *DefaultDelegate) Connect(ctx *Context, rw http.ResponseWriter) {}
 func (h *DefaultDelegate) Auth(ctx *Context, rw http.ResponseWriter) {}
 
 // BeforeRequest HTTP请求前 设置X-Forwarded-For, 修改Header、Body
-func (h *DefaultDelegate) BeforeRequest(ctx *Context) {}
+func (h *DefaultDelegate) BeforeRequest(ctx *Context) {
+	// Hosts 屏蔽方式 host+ url
+	for _, hostlist := range filterrules.Hostlist { // 遍历HOSTS 屏蔽方式
+		if gregex.IsMatchString(hostlist, ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			// ctx.Req.RemoteAddr = "127.0.0.0"
+			ctx.Abort()
+
+		}
+
+	}
+}
 
 // BeforeResponse 响应发送到客户端前, 修改Header、Body、Status Code
 func (h *DefaultDelegate) BeforeResponse(ctx *Context, resp *http.Response, err error) { // 我能个去，写了一半....

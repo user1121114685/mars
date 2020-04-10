@@ -1,2 +1,4 @@
-@@.*.baidu.com
-||shaoxia.xyz
+@@fanyi\.baidu\.com
+@@.*bdstatic.com
+@@.*google.com
+||shaoxia.xyz/post/.*
