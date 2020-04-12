@@ -133,8 +133,7 @@ var _ http.Handler = &Proxy{}
 
 // ServeHTTP 实现了http.Handler接口
 func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	// 初始化规则文件
-	filterrules.LoadFilterRules()
+
 	if req.URL.Host == "" {
 		req.URL.Host = req.Host
 	}
@@ -143,6 +142,12 @@ func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	for _, whitelist := range filterrules.Whitelist { // 遍历白名单
 		if gregex.IsMatchString(whitelist, req.Host) {
 			pass = 1
+		}
+
+	}
+	for _, blacklist := range filterrules.Blacklist { // 遍历需要过滤的名单
+		if gregex.IsMatchString(blacklist, req.Host) {
+			pass = 2
 		}
 
 	}
@@ -165,16 +170,18 @@ func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	switch {
-	case pass == 1: // 放行
-		// 什么都不做
+	case pass == 1: // 白名单
+		pass = 0
 		p.forwardTunnel(ctx, rw)
-	case ctx.Req.Method == http.MethodConnect && p.decryptHTTPS:
+	case pass == 2 || ctx.Req.Method == http.MethodConnect && p.decryptHTTPS:
+		pass = 0
 		p.forwardHTTPS(ctx, rw)
-	case ctx.Req.Method == http.MethodConnect:
+	case pass == 0 || ctx.Req.Method == http.MethodConnect:
 		p.forwardTunnel(ctx, rw)
 	default:
 		p.forwardHTTP(ctx, rw)
 	}
+
 }
 
 // ClientConnNum 获取客户端连接数
@@ -202,6 +209,36 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 			newReq.Header.Del(item)
 		}
 	}
+
+	//  Request Headers 删除
+	for _, list := range filterrules.ReqDel { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "headerName": list[1]})
+			newReq.Header.Del(list["headerName"])
+
+		}
+	}
+
+	//  Request Headers 追加设置
+	for _, list := range filterrules.ReqOriSet { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "target": listRW[0], "result": listRW[1]}
+			ori := newReq.Header.Get(list["target"])
+			newReq.Header.Set(list["target"], ori+";"+list["result"])
+
+		}
+	}
+
+	//  Request Headers 追加设置
+	for _, list := range filterrules.ReqNewSet { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "target": listRW[0], "result": listRW[1]}
+
+			newReq.Header.Set(list["target"], list["result"])
+
+		}
+	}
+
 	resp, err := p.transport.RoundTrip(newReq)
 
 	p.delegateMars.BeforeResponse(ctx, resp, err) // 这里修改传回内容
@@ -216,6 +253,34 @@ func (p *Proxy) DoRequest(ctx *Context, responseFunc func(*http.Response, error)
 		}
 	}
 
+	//  Response Headers 删除
+	for _, list := range filterrules.RespDel { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "headerName": list[1]})
+			resp.Header.Del(list["headerName"])
+
+		}
+	}
+
+	//  Response Headers 追加设置
+	for _, list := range filterrules.RespOriSet { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "target": listRW[0], "result": listRW[1]}
+			ori := resp.Header.Get(list["target"])
+			resp.Header.Set(list["target"], ori+";"+list["result"])
+
+		}
+	}
+
+	//  Response Headers 追加设置
+	for _, list := range filterrules.RespNewSet { // 遍历重定向url
+		if gregex.IsMatchString(list["url"], ctx.Req.URL.Host+ctx.Req.URL.Path) {
+			//{"url": list[0], "target": listRW[0], "result": listRW[1]}
+
+			resp.Header.Set(list["target"], list["result"])
+
+		}
+	}
 	responseFunc(resp, err)
 }
 

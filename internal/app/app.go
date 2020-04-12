@@ -10,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"mars/filterrules"
 	"mars/internal/app/inject"
 	"mars/internal/app/inspector"
 	"mars/shadowsocks"
@@ -40,6 +41,8 @@ func New(container *inject.Container) *App {
 
 // Run 运行应用
 func (app *App) Run() {
+	// 初始化规则文件
+	filterrules.LoadFilterRules()
 	go app.startProxyServer()
 	go app.startInspectorServer()
 	go shadowsocks.ShadowsocksMain()

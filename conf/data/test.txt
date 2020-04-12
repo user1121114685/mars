@@ -1,4 +1,27 @@
+# 放行百度翻译
 @@fanyi\.baidu\.com
 @@.*bdstatic.com
+# 放行谷歌
 @@.*google.com
+# 以HOSTS方式屏蔽域名
 ||shaoxia.xyz/post/.*
+# 网址重写 
+.*bilibili\.com/video/.*@url||rw@.*@@@/video/BV1jE411Z7tL
+# 网址重定向 
+.*youtube\.com/.*@url||to@.*@@@bilibili.com/video/BV1jE411Z7tL
+# Request Headers 删除
+shaoxia\.xyz@req||del@Sec-Fetch-User
+# Request Headers 追加设置
+shaoxia\.xyz@req||oriset@sec-fetch-site@@@mars追加;mars再次追加
+# Request Headers 新设置
+shaoxia\.xyz@req||oriset@marsHeader@@@mars测试;mars再次测试
+# Response Headers 删除
+shaoxia\.xyz@resp||del@date
+# Response Headers 追加设置
+shaoxia\.xyz@resp||oriset@server@@@mars追加;mars再次追加
+# Response Headers 新设置
+shaoxia\.xyz@resp||oriset@marsHeader@@@mars测试;mars再次测试
+# Request Body 新设置
+shaoxia\.xyz/about@req||rw@.*@@@mars Body Request 替换测试
+# Response Body 新设置
+shaoxia\.xyz/about@resp||rw@.*@@@mars Response Body 替换测试
